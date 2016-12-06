@@ -14,7 +14,7 @@
 namespace Gosu
 {
     //! Very lightweight class that identifies a button (keyboard, mouse or other device).
-    class Button
+    class __declspec(dllexport) Button
     {
         unsigned id_;
         
@@ -60,7 +60,7 @@ namespace Gosu
     
     //! Manages initialization and shutdown of the input system. Only one Input
     //! instance can exist per application.
-    class Input
+    class __declspec(dllexport) Input
     {
         struct Impl;
         const GOSU_UNIQUE_PTR<Impl> pimpl;

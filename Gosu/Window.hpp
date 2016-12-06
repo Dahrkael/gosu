@@ -15,7 +15,7 @@
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
-#include <windows.h>
+//#include <windows.h>
 #endif
 
 namespace Gosu
@@ -39,7 +39,7 @@ namespace Gosu
     //! and provides timing functionality.
     //! Note that you should really only use one instance of this class at the same time.
     //! This may or may not change later.
-    class Window
+    class __declspec(dllexport) Window
     {
         struct Impl;
         const GOSU_UNIQUE_PTR<Impl> pimpl;
@@ -62,7 +62,7 @@ namespace Gosu
         virtual ~Window();
 
         std::wstring caption() const;
-        void setCaption(const std::wstring& caption);
+        void setCaption(const char* caption);
         
         double updateInterval() const;
         

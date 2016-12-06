@@ -153,9 +153,9 @@ std::wstring Gosu::Window::caption() const
     return utf8ToWstring(SDL_GetWindowTitle(sharedWindow()));
 }
 
-void Gosu::Window::setCaption(const std::wstring& caption)
+void Gosu::Window::setCaption(const char* caption)
 {
-    std::string utf8 = wstringToUTF8(caption);
+	std::string utf8 = std::string(caption);
     SDL_SetWindowTitle(sharedWindow(), utf8.c_str());
 }
 

@@ -176,20 +176,22 @@ private:
     SampleData& operator=(const SampleData&);
 };
 
-Gosu::Sample::Sample(const std::wstring& filename)
+Gosu::Sample::Sample(const char* filename)
 {
     CONSTRUCTOR_BEGIN;
 
-    if (isOggFile(filename))
+	std::wstring filename2 = utf8ToWstring(std::string(filename));
+
+    if (isOggFile(filename2))
     {
         Gosu::Buffer buffer;
-        Gosu::loadFile(buffer, filename);
+        Gosu::loadFile(buffer, filename2);
         OggFile oggFile(buffer.frontReader());
         data.reset(new SampleData(oggFile));
     }
     else
     {
-        WAVE_FILE audioFile(filename);
+        WAVE_FILE audioFile(filename2);
         data.reset(new SampleData(audioFile));
     }
     
@@ -504,8 +506,9 @@ public:
 // TODO: Move into proper internal header
 namespace Gosu { bool isExtension(const wchar_t* str, const wchar_t* ext); }
 
-Gosu::Song::Song(const std::wstring& filename)
+Gosu::Song::Song(const char* filename)
 {
+	std::wstring filename2 = utf8ToWstring(std::string(filename));
 #ifdef GOSU_IS_IPHONE
     if (isExtension(filename.c_str(), L".mp3") ||
         isExtension(filename.c_str(), L".aac") ||
@@ -515,7 +518,7 @@ Gosu::Song::Song(const std::wstring& filename)
 #endif
     {
         CONSTRUCTOR_BEGIN;
-        data.reset(new StreamData(filename));
+        data.reset(new StreamData(filename2));
         CONSTRUCTOR_END
     }
 }
@@ -598,7 +601,7 @@ void Gosu::Song::update()
 
 // Deprecated constructors.
 
-Gosu::Sample::Sample(Audio& audio, const std::wstring& filename)
+Gosu::Sample::Sample(Audio& audio, const char* filename)
 {
     Sample(filename).data.swap(data);
 }
@@ -608,7 +611,7 @@ Gosu::Sample::Sample(Audio& audio, Reader reader)
     Sample(reader).data.swap(data);
 }
 
-Gosu::Song::Song(Audio& audio, const std::wstring& filename)
+Gosu::Song::Song(Audio& audio, const char* filename)
 {
     data = Song(filename).data;
 }

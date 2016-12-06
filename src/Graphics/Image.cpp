@@ -6,7 +6,7 @@
 #include <Gosu/IO.hpp>
 #include <stdexcept>
 
-Gosu::Image::Image(const std::wstring& filename, unsigned flags)
+Gosu::Image::Image(const char* filename, unsigned flags)
 {
 	// Forward.
 	Bitmap bmp;
@@ -14,7 +14,7 @@ Gosu::Image::Image(const std::wstring& filename, unsigned flags)
 	Image(bmp, flags).data.swap(data);
 }
 
-Gosu::Image::Image(const std::wstring& filename,
+Gosu::Image::Image(const char* filename,
     unsigned srcX, unsigned srcY, unsigned srcWidth, unsigned srcHeight,
     unsigned flags)
 {
@@ -143,7 +143,7 @@ std::vector<Gosu::Image> Gosu::loadTiles(const Bitmap& bmp,
     return images;
 }
 
-std::vector<Gosu::Image> Gosu::loadTiles(const std::wstring& filename,
+std::vector<Gosu::Image> Gosu::loadTiles(const char* filename,
     int tileWidth, int tileHeight, unsigned flags)
 {
     Bitmap bmp;
@@ -153,12 +153,12 @@ std::vector<Gosu::Image> Gosu::loadTiles(const std::wstring& filename,
 
 // Deprecated constructors.
 
-Gosu::Image::Image(Graphics& graphics, const std::wstring& filename, bool tileable)
+Gosu::Image::Image(Graphics& graphics, const char* filename, bool tileable)
 {
     Image(filename, tileable).data.swap(data);
 }
 
-Gosu::Image::Image(Graphics& graphics, const std::wstring& filename,
+Gosu::Image::Image(Graphics& graphics, const char* filename,
                    unsigned srcX, unsigned srcY, unsigned srcWidth, unsigned srcHeight,
                    bool tileable)
 {
@@ -185,7 +185,7 @@ std::vector<Gosu::Image> Gosu::loadTiles(Gosu::Graphics& graphics, const Bitmap&
     return Gosu::loadTiles(bmp, tileWidth, tileHeight, tileable);
 }
 
-std::vector<Gosu::Image> Gosu::loadTiles(Gosu::Graphics& graphics, const std::wstring& filename,
+std::vector<Gosu::Image> Gosu::loadTiles(Gosu::Graphics& graphics, const char* filename,
     int tileWidth, int tileHeight, bool tileable)
 {
     return Gosu::loadTiles(filename, tileWidth, tileHeight, tileable);

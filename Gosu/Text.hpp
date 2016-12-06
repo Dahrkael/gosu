@@ -13,15 +13,15 @@ namespace Gosu
 {
     //! Returns the name of a neutral font that is available on the current
     //! platform.
-    std::wstring defaultFontName();
+	__declspec(dllexport) const char* defaultFontName();
 
     //! Returns the width an unformatted line of text would span on a bitmap if it were drawn using
     //! drawText with the same arguments. This is a very low-level function that does not understand
     //! any of Gosu's HTML-like markup.
     //! \param text Unformatted text.
     //! \param fontName Name of a system font, or a filename to a TTF file (must contain '/').
-    unsigned textWidth(const std::wstring& text,
-        const std::wstring& fontName, unsigned fontHeight,
+	__declspec(dllexport) unsigned textWidth(const char* text,
+		const char* fontName, unsigned fontHeight,
         unsigned fontFlags = 0);
 
     //! Draws a line of unformatted text on a bitmap. This is a very low-level function that does not understand
@@ -31,8 +31,8 @@ namespace Gosu
     //! \param fontHeight Height, in pixels, of the text.
     //! \param fontFlags Binary combination of members of the FontFlags
     //! enum.
-    void drawText(Bitmap& bitmap, const std::wstring& text, int x, int y,
-        Color c, const std::wstring& fontName, unsigned fontHeight,
+	__declspec(dllexport) void drawText(Bitmap& bitmap, const char* text, int x, int y,
+        Color c, const char* fontName, unsigned fontHeight,
         unsigned fontFlags = 0);
 
     //! Creates a bitmap that is filled with a line of formatted text given to the function.
@@ -42,8 +42,8 @@ namespace Gosu
     //! \param fontHeight Height of the font in pixels.
     //! \param fontFlags Binary combination of members of the FontFlags
     //! enum.
-    Bitmap createText(const std::wstring& text,
-        const std::wstring& fontName, unsigned fontHeight,
+	__declspec(dllexport) Bitmap createText(const char* text,
+		const char* fontName, unsigned fontHeight,
         unsigned fontFlags = 0);
 
     //! Creates a bitmap that is filled with the formatted text given to the function.
@@ -58,14 +58,14 @@ namespace Gosu
     //! border. When a single word is too long, it will be truncated.
     //! \param fontFlags Binary combination of members of the FontFlags
     //! enum.
-    Bitmap createText(const std::wstring& text,
-        const std::wstring& fontName, unsigned fontHeight, 
+	__declspec(dllexport) Bitmap createText(const char* text,
+		const char* fontName, unsigned fontHeight,
         int lineSpacing, unsigned width, TextAlign align,
         unsigned fontFlags = 0);
     
     //! Registers a new HTML-style entity that can subsequently be used
     //! with Gosu::Font and Gosu::createText. The name is given without & and ;.
-    void registerEntity(const std::wstring& name, const Bitmap& replacement);
+	__declspec(dllexport) void registerEntity(const char* name, const Bitmap& replacement);
 }
 
 #endif

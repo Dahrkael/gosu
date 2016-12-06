@@ -10,7 +10,7 @@ struct Gosu::TextInput::Impl
     // These two strings contain UTF-8 data.
     // See this Wiki page for an overview of what is going on here:
     // http://wiki.libsdl.org/Tutorials/TextInput#CandidateList
-    std::wstring text, composition;
+    std::string text, composition;
     unsigned caretPos, selectionStart;
     
     Impl()
@@ -18,8 +18,9 @@ struct Gosu::TextInput::Impl
     {
     }
     
-    void insertText(const std::wstring& newText)
+    void insertText(const char* newText)
     {
+		std::string newText2 = std::string(newText);
         // Stop IME composition.
         composition.clear();
 
@@ -31,8 +32,8 @@ struct Gosu::TextInput::Impl
             caretPos = selectionStart = min;
         }
         
-        text.insert(text.begin() + caretPos, newText.begin(), newText.end());
-        caretPos += newText.size();
+        text.insert(text.begin() + caretPos, newText2.begin(), newText2.end());
+        caretPos += newText2.size();
         selectionStart = caretPos;
     }
     
@@ -140,20 +141,20 @@ Gosu::TextInput::~TextInput()
 {
 }
 
-std::wstring Gosu::TextInput::text() const
+const char* Gosu::TextInput::text() const
 {
-    std::wstring composedText = pimpl->text;
+    std::string composedText = pimpl->text;
     if (! pimpl->composition.empty()) {
         composedText.insert(pimpl->caretPos, pimpl->composition);
     }
-    return composedText;
+    return pimpl->text.c_str();
 }
 
-void Gosu::TextInput::setText(const std::wstring& text)
+void Gosu::TextInput::setText(const char* text)
 {
 	pimpl->text = text;
     pimpl->composition.clear();
-	pimpl->caretPos = pimpl->selectionStart = static_cast<unsigned>(text.length());
+	pimpl->caretPos = pimpl->selectionStart = static_cast<unsigned>(std::string(text).length());
 }
 
 unsigned Gosu::TextInput::caretPos() const
@@ -183,14 +184,14 @@ bool Gosu::TextInput::feedSDLEvent(void* event)
     switch (e->type) {
         // Direct text input, and sent after IME composition completes.
         case SDL_TEXTINPUT: {
-            std::wstring textToInsert = utf8ToWstring(e->text.text);
-            textToInsert = filter(textToInsert);
-            pimpl->insertText(textToInsert);
+            std::string textToInsert = e->text.text;
+            textToInsert = filter(textToInsert.c_str());
+            pimpl->insertText(textToInsert.c_str());
             return true;
         }
         // IME composition in progress.
         case SDL_TEXTEDITING: {
-            pimpl->composition = utf8ToWstring(e->edit.text);
+            pimpl->composition = e->edit.text;
             return true;
         }
         // Emulate "standard" Windows/X11 keyboard behavior.

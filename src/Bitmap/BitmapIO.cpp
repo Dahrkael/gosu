@@ -53,10 +53,11 @@ namespace
     }
 }
 
-void Gosu::loadImageFile(Gosu::Bitmap& bitmap, const std::wstring& filename)
+void Gosu::loadImageFile(Gosu::Bitmap& bitmap, const char* filename)
 {
+	std::wstring filename2 = utf8ToWstring(std::string(filename));
     Buffer buffer;
-    loadFile(buffer, filename);
+    loadFile(buffer, filename2);
     loadImageFile(bitmap, buffer.frontReader());
 }
 
@@ -91,16 +92,17 @@ void Gosu::loadImageFile(Gosu::Bitmap& bitmap, Reader input)
 // TODO: Move into proper internal header
 namespace Gosu { bool isExtension(const wchar_t* str, const wchar_t* ext); }
 
-void Gosu::saveImageFile(const Gosu::Bitmap& bitmap, const std::wstring& filename)
+void Gosu::saveImageFile(const Gosu::Bitmap& bitmap, const char* filename)
 {
+	std::wstring filename2 = utf8ToWstring(std::string(filename));
     int ok;
-    std::string utf8 = Gosu::wstringToUTF8(filename);
+    std::string utf8 = Gosu::wstringToUTF8(filename2);
     
-    if (isExtension(filename.c_str(), L"bmp"))
+    if (isExtension(filename2.c_str(), L"bmp"))
     {
         ok = stbi_write_bmp(utf8.c_str(), bitmap.width(), bitmap.height(), 4, bitmap.data());
     }
-    else if (isExtension(filename.c_str(), L"tga"))
+    else if (isExtension(filename2.c_str(), L"tga"))
     {
         ok = stbi_write_tga(utf8.c_str(), bitmap.width(), bitmap.height(), 4, bitmap.data());
     }
@@ -123,16 +125,17 @@ namespace
 }
 
 void Gosu::saveImageFile(const Gosu::Bitmap& bitmap, Gosu::Writer writer,
-    const std::wstring& formatHint)
+    const char* formatHint)
 {
+	std::wstring formatHint2 = utf8ToWstring(std::string(formatHint));
     int ok;
     
-    if (isExtension(formatHint.c_str(), L"bmp"))
+    if (isExtension(formatHint2.c_str(), L"bmp"))
     {
         ok = stbi_write_bmp_to_func(stbiWriteToWriter, &writer,
                                     bitmap.width(), bitmap.height(), 4, bitmap.data());
     }
-    else if (isExtension(formatHint.c_str(), L"tga"))
+    else if (isExtension(formatHint2.c_str(), L"tga"))
     {
         stbi_write_tga_with_rle = 0;
         ok = stbi_write_tga_to_func(stbiWriteToWriter, &writer,
@@ -146,7 +149,7 @@ void Gosu::saveImageFile(const Gosu::Bitmap& bitmap, Gosu::Writer writer,
     
     if (ok == 0)
         throw std::runtime_error("Could not save image data to memory (format hint = '" +
-                                 Gosu::wstringToUTF8(formatHint) + "'");
+                                 Gosu::wstringToUTF8(formatHint2) + "'");
 }
 
 // Deprecated methods.
@@ -165,12 +168,12 @@ Gosu::Reader Gosu::loadFromBMP(Bitmap& bitmap, Reader reader)
 
 Gosu::Writer Gosu::saveToPNG(const Bitmap& bitmap, Writer writer)
 {
-    saveImageFile(bitmap, writer, L".png");
+    saveImageFile(bitmap, writer, ".png");
     return writer.resource().backWriter();
 }
 
 Gosu::Writer Gosu::saveToBMP(const Bitmap& bitmap, Writer writer)
 {
-    saveImageFile(bitmap, writer, L".bmp");
+    saveImageFile(bitmap, writer, ".bmp");
     return writer.resource().backWriter();
 }

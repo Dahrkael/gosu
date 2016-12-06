@@ -12,9 +12,9 @@
 #include <map>
 #include <set>
 
-std::wstring Gosu::defaultFontName()
+const char* Gosu::defaultFontName()
 {
-    return L"Arial";
+    return "Arial";
 }
 
 namespace Gosu
@@ -135,33 +135,39 @@ namespace Gosu
     }
 };
 
-unsigned Gosu::textWidth(const std::wstring& text,
-    const std::wstring& fontName, unsigned fontHeight, unsigned fontFlags)
+unsigned Gosu::textWidth(const char* text,
+	const char* fontName, unsigned fontHeight, unsigned fontFlags)
 {
-    if (text.find_first_of(L"\r\n") != std::wstring::npos)
+	std::wstring text2 = Gosu::utf8ToWstring(std::string(text));
+	std::wstring fontName2 = Gosu::utf8ToWstring(std::string(fontName));
+
+    if (text2.find_first_of(L"\r\n") != std::wstring::npos)
         throw std::invalid_argument("the argument to textWidth cannot contain line breaks");
     
     WinBitmap helper(1, 1);
-    helper.selectFont(fontName, fontHeight, fontFlags);
+    helper.selectFont(fontName2, fontHeight, fontFlags);
     
     SIZE size;
-    if (!::GetTextExtentPoint32(helper.context(), text.c_str(), text.length(), &size))
+    if (!::GetTextExtentPoint32(helper.context(), text2.c_str(), text2.length(), &size))
         Win::throwLastError("calculating the width of a text");
     
     return size.cx;
 }
 
-void Gosu::drawText(Bitmap& bitmap, const std::wstring& text, int x, int y,
-    Color c, const std::wstring& fontName, unsigned fontHeight,
+void Gosu::drawText(Bitmap& bitmap, const char* text, int x, int y,
+    Color c, const char* fontName, unsigned fontHeight,
     unsigned fontFlags)
 {
-    if (text.find_first_of(L"\r\n") != std::wstring::npos)
+	std::wstring text2 = Gosu::utf8ToWstring(std::string(text));
+	std::wstring fontName2 = Gosu::utf8ToWstring(std::string(fontName));
+
+    if (text2.find_first_of(L"\r\n") != std::wstring::npos)
         throw std::invalid_argument("the argument to drawText cannot contain line breaks");
     
     unsigned width = textWidth(text, fontName, fontHeight, fontFlags);
 
     WinBitmap helper(width, fontHeight);
-    helper.selectFont(fontName, fontHeight, fontFlags);
+    helper.selectFont(fontName2, fontHeight, fontFlags);
 
     if (::SetTextColor(helper.context(), 0xffffff) == CLR_INVALID)
         Win::throwLastError("setting the text color");
@@ -169,7 +175,7 @@ void Gosu::drawText(Bitmap& bitmap, const std::wstring& text, int x, int y,
     Win::check(::SetBkMode(helper.context(), TRANSPARENT),
         "setting a bitmap's background mode to TRANSPARENT");
 
-    ::ExtTextOut(helper.context(), 0, 0, 0, 0, text.c_str(), text.length(), 0);
+    ::ExtTextOut(helper.context(), 0, 0, 0, 0, text2.c_str(), text2.length(), 0);
     
     for (unsigned relY = 0; relY < fontHeight; ++relY)
         for (unsigned relX = 0; relX < width; ++relX)

@@ -7,10 +7,10 @@
 namespace Gosu
 {
     //! Freezes the current thread for at least the specified time.
-    void sleep(unsigned milliseconds);
+	__declspec(dllexport) void sleep(unsigned milliseconds);
 
     //! Incrementing, possibly wrapping millisecond timer.
-    unsigned long milliseconds();
+	__declspec(dllexport) unsigned long milliseconds();
 }
 
 #endif

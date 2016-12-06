@@ -8,7 +8,7 @@ namespace Gosu
 {
     //! Returns the current framerate, as determined by an unspecified and possibly
     //! horrible algorithm.
-    int fps();
+	__declspec(dllexport) int fps();
 }
 
 #endif

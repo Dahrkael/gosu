@@ -15,7 +15,7 @@ namespace Gosu
     //! The four-byte layout in memory is RGBA. On Big-Endian machines the
     //! unsigned int interpretation is 0xrrggbbaa, on Little-Endian machines
     //! it is 0xaabbggrr.
-    class Color
+    class __declspec(dllexport) Color
     {
         std::tr1::uint32_t rep;
         #ifdef GOSU_IS_LITTLE_ENDIAN
@@ -34,18 +34,18 @@ namespace Gosu
         }
         
         //! Conversion constructor for literals of the form 0xaarrggbb.
-        Color(unsigned argb)
+		__declspec(noinline) Color(unsigned argb)
         {
             *this = Color((argb >> 24) & 0xff, (argb >> 16) & 0xff,
                           (argb >>  8) & 0xff, (argb >>  0) & 0xff);
         }
         
-        Color(Channel red, Channel green, Channel blue)
+		__declspec(noinline) Color(Channel red, Channel green, Channel blue)
         {
             *this = Color(0xff, red, green, blue);
         }
         
-        Color(Channel alpha, Channel red, Channel green, Channel blue)
+		__declspec(noinline) Color(Channel alpha, Channel red, Channel green, Channel blue)
         {
             rep = (alpha << ALPHA_OFFSET) | (red << RED_OFFSET) |
                   (green << GREEN_OFFSET) | (blue << BLUE_OFFSET);
@@ -58,45 +58,45 @@ namespace Gosu
         static Color fromHSV(double h, double s, double v);
         static Color fromAHSV(Channel alpha, double h, double s, double v);
 
-        Channel red() const
+		__declspec(noinline) Channel red() const
         {
             return static_cast<Channel>(rep >> RED_OFFSET);
         }
 
-        Channel green() const
+		__declspec(noinline) Channel green() const
         {
             return static_cast<Channel>(rep >> GREEN_OFFSET);
         }
 
-        Channel blue() const
+		__declspec(noinline) Channel blue() const
         {
             return static_cast<Channel>(rep >> BLUE_OFFSET);
         }
 
-        Channel alpha() const
+		__declspec(noinline) Channel alpha() const
         {
             return static_cast<Channel>(rep >> ALPHA_OFFSET);
         }
 
-        void setRed(Channel value)
+		__declspec(noinline) void setRed(Channel value)
         {
             rep &= ~(0xff << RED_OFFSET);
             rep |= value << RED_OFFSET;
         }
 
-        void setGreen(Channel value)
+		__declspec(noinline) void setGreen(Channel value)
         {
             rep &= ~(0xff << GREEN_OFFSET);
             rep |= value << GREEN_OFFSET;
         }
 
-        void setBlue(Channel value)
+		__declspec(noinline) void setBlue(Channel value)
         {
             rep &= ~(0xff << BLUE_OFFSET);
             rep |= value << BLUE_OFFSET;
         }
 
-        void setAlpha(Channel value)
+		__declspec(noinline) void setAlpha(Channel value)
         {
             rep &= ~(0xff << ALPHA_OFFSET);
             rep |= value << ALPHA_OFFSET;
@@ -121,25 +121,25 @@ namespace Gosu
         void setValue(double v);
 
         //! Returns the color in 0xaarrggbb representation.
-        std::tr1::uint32_t argb() const
+		__declspec(noinline) std::tr1::uint32_t argb() const
         {
             return alpha() << 24 | red() << 16 | green() << 8 | blue();
         }
 
         //! Returns the color in 0x00bbggrr representation. Useful for Win32 programming.
-        std::tr1::uint32_t bgr() const
+		__declspec(noinline) std::tr1::uint32_t bgr() const
         {
             return blue() << 16 | green() << 8 | red();
         }
 
         //! Returns the color in 0xaabbggrr representation.
-        std::tr1::uint32_t abgr() const
+		__declspec(noinline) std::tr1::uint32_t abgr() const
         {
             return alpha() << 24 | blue() << 16 | green() << 8 | red();
         }
         
         //! Returns the internal representation of the color (RGBA in memory).
-        std::tr1::uint32_t gl() const
+		__declspec(noinline) std::tr1::uint32_t gl() const
         {
             return rep;
         }

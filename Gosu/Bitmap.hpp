@@ -17,7 +17,7 @@ namespace Gosu
     //! minimal drawing functionality and serves as a temporary holder for
     //! graphical resources which are usually turned into Images later.
     //! Has (expensive) value semantics.
-    class Bitmap
+    class __declspec(dllexport) Bitmap
     {
         unsigned w, h;
         std::vector<Color> pixels;
@@ -63,15 +63,15 @@ namespace Gosu
     };
     
     //! Loads any supported image into a Bitmap.
-    void loadImageFile(Bitmap& bitmap, const std::wstring& filename);
+    void loadImageFile(Bitmap& bitmap, const char* filename);
     //! Loads any supported image into a Bitmap.
     void loadImageFile(Bitmap& bitmap, Reader input);
     
     //! Saves a Bitmap to a file.
-    void saveImageFile(const Bitmap& bitmap, const std::wstring& filename);
+    void saveImageFile(const Bitmap& bitmap, const char* filename);
     //! Saves a Bitmap to an arbitrary resource.
     void saveImageFile(const Bitmap& bitmap, Writer writer,
-        const std::wstring& formatHint = L"png");
+		const char* formatHint = "png");
 
     //! Set the alpha value of all pixels which are equal to the color key
     //! to zero. Color values are adjusted so that no borders show up when

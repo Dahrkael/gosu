@@ -12,7 +12,7 @@ using namespace std;
 
 struct Gosu::Font::Impl
 {
-    wstring name;
+    string name;
     unsigned height, flags;
 
     // Unicode planes of 2^16 characters each. On Windows, where wchar_t is only 16 bits wide, only
@@ -25,7 +25,7 @@ struct Gosu::Font::Impl
     typedef tr1::array<CharInfo, 65536> Plane;
     GOSU_UNIQUE_PTR<Plane> planes[16][ffCombinations];
     
-    map<wstring, tr1::shared_ptr<Image> > entityCache;
+    map<string, tr1::shared_ptr<Image> > entityCache;
     
     CharInfo& charInfo(wchar_t wc, unsigned flags)
     {
@@ -52,21 +52,21 @@ struct Gosu::Font::Impl
             return *ptr;
         }
         
-        wchar_t wc = fs.charAt(i);
+        char wc = fs.charAt(i);
         unsigned flags = fs.flagsAt(i);
         CharInfo& info = charInfo(wc, flags);
         
         if (info.image.get())
             return *info.image;
         
-        wstring charString(1, wc);
+        string charString(1, wc);
         // TODO: Would be nice to have.
         // if (isFormattingChar(wc))
         //     charString.clear();
-        unsigned charWidth = Gosu::textWidth(charString, name, height, flags);
+        unsigned charWidth = Gosu::textWidth(charString.c_str(), name.c_str(), height, flags);
         
         Bitmap bitmap(charWidth, height, 0x00ffffff);
-        drawText(bitmap, charString, 0, 0, Color::WHITE, name, height, flags);
+        drawText(bitmap, charString.c_str(), 0, 0, Color::WHITE, name.c_str(), height, flags);
         info.image.reset(new Image(bitmap));
         info.factor = 0.5;
         return *info.image;
@@ -80,7 +80,7 @@ struct Gosu::Font::Impl
     }
 };
 
-Gosu::Font::Font(unsigned fontHeight, const wstring& fontName, unsigned fontFlags)
+Gosu::Font::Font(unsigned fontHeight, const char* fontName, unsigned fontFlags)
 : pimpl(new Impl)
 {
     pimpl->name = fontName;
@@ -88,9 +88,9 @@ Gosu::Font::Font(unsigned fontHeight, const wstring& fontName, unsigned fontFlag
     pimpl->flags = fontFlags;
 }
 
-wstring Gosu::Font::name() const
+const char* Gosu::Font::name() const
 {
-    return pimpl->name;
+    return pimpl->name.c_str();
 }
 
 unsigned Gosu::Font::height() const
@@ -103,9 +103,9 @@ unsigned Gosu::Font::flags() const
     return pimpl->flags;
 }
 
-double Gosu::Font::textWidth(const wstring& text, double factorX) const
+double Gosu::Font::textWidth(const char* text, double factorX) const
 {
-    FormattedString fs(text.c_str(), flags());
+    FormattedString fs(text, flags());
     double result = 0;
     for (unsigned i = 0; i < fs.length(); ++i)
     {
@@ -116,10 +116,10 @@ double Gosu::Font::textWidth(const wstring& text, double factorX) const
     return result * factorX;
 }
 
-void Gosu::Font::draw(const wstring& text, double x, double y, ZPos z,
+void Gosu::Font::draw(const char* text, double x, double y, ZPos z,
     double factorX, double factorY, Color c, AlphaMode mode) const
 {
-    FormattedString fs(text.c_str(), flags());
+    FormattedString fs(text, flags());
     
     for (unsigned i = 0; i < fs.length(); ++i)
     {
@@ -133,7 +133,7 @@ void Gosu::Font::draw(const wstring& text, double x, double y, ZPos z,
     }
 }
 
-void Gosu::Font::drawRel(const wstring& text, double x, double y, ZPos z,
+void Gosu::Font::drawRel(const char* text, double x, double y, ZPos z,
     double relX, double relY, double factorX, double factorY, Color c,
     AlphaMode mode) const
 {
@@ -158,7 +158,7 @@ void Gosu::Font::setImage(wchar_t wc, unsigned fontFlags, const Image& image)
     ci.factor = 1.0;
 }
 
-void Gosu::Font::drawRot(const wstring& text, double x, double y, ZPos z, double angle,
+void Gosu::Font::drawRot(const char* text, double x, double y, ZPos z, double angle,
     double factorX, double factorY, Color c, AlphaMode mode) const
 {
     Gosu::Graphics::pushTransform(rotate(angle, x, y));
@@ -168,7 +168,7 @@ void Gosu::Font::drawRot(const wstring& text, double x, double y, ZPos z, double
 
 // Deprecated constructors
 
-Gosu::Font::Font(Graphics& graphics, const wstring& fontName, unsigned fontHeight,
+Gosu::Font::Font(Graphics& graphics, const char* fontName, unsigned fontHeight,
     unsigned fontFlags)
 {
     Font(fontHeight, fontName, fontFlags).pimpl.swap(pimpl);

@@ -52,7 +52,7 @@ namespace Gosu
             Bitmap bmp;
             unsigned usedLines, allocatedLines;
 
-            wstring fontName;
+            string fontName;
             unsigned fontHeight;
             int lineSpacing;
             TextAlign align;
@@ -72,7 +72,7 @@ namespace Gosu
             }
 
         public:
-            TextBlockBuilder(const wstring& fontName, unsigned fontHeight,
+            TextBlockBuilder(const char* fontName, unsigned fontHeight,
                 int lineSpacing, unsigned width, TextAlign align)
             {
                 usedLines = 0;
@@ -85,7 +85,7 @@ namespace Gosu
                 this->lineSpacing = lineSpacing;
                 this->align = align;
 
-                spaceWidth_ = textWidth(FormattedString(L" ", 0));
+                spaceWidth_ = textWidth(FormattedString(" ", 0));
             }
 
             unsigned width() const
@@ -104,7 +104,7 @@ namespace Gosu
                 vector<FormattedString> parts = text.splitParts();
                 unsigned result = 0;
                 for (unsigned i = 0; i < parts.size(); ++i)
-                    result += Gosu::textWidth(parts[i].unformat(), fontName, fontHeight, parts[i].flagsAt(0));
+                    result += Gosu::textWidth(parts[i].unformat().c_str(), fontName.c_str(), fontHeight, parts[i].flagsAt(0));
                 return result;
             }
 
@@ -160,10 +160,10 @@ namespace Gosu
                             continue;
                         }
                         
-                        wstring unformattedPart = part.unformat();
-                        drawText(bmp, unformattedPart, trunc(pos) + x, trunc(top),
-                            part.colorAt(0), fontName, fontHeight, part.flagsAt(0));
-                        x += Gosu::textWidth(unformattedPart, fontName, fontHeight,
+                        string unformattedPart = part.unformat();
+                        drawText(bmp, unformattedPart.c_str(), trunc(pos) + x, trunc(top),
+                            part.colorAt(0), fontName.c_str(), fontHeight, part.flagsAt(0));
+                        x += Gosu::textWidth(unformattedPart.c_str(), fontName.c_str(), fontHeight,
                             part.flagsAt(0));
                     }
                     
@@ -299,14 +299,14 @@ namespace Gosu
     }
 }
 
-Gosu::Bitmap Gosu::createText(const wstring& text,
-    const wstring& fontName, unsigned fontHeight, int lineSpacing,
+Gosu::Bitmap Gosu::createText(const char* text,
+	const char* fontName, unsigned fontHeight, int lineSpacing,
     unsigned width, TextAlign align, unsigned fontFlags)
 {
     if (lineSpacing <= -static_cast<int>(fontHeight))
         throw logic_error("negative line spacing of more than line height impossible");
 
-    FormattedString fs(text.c_str(), fontFlags);
+    FormattedString fs(text, fontFlags);
     if (fs.length() == 0)
         return Bitmap(width, fontHeight);
     
@@ -322,10 +322,10 @@ Gosu::Bitmap Gosu::createText(const wstring& text,
 }
 
 // Very easy special case.
-Gosu::Bitmap Gosu::createText(const wstring& text,
-    const wstring& fontName, unsigned fontHeight, unsigned fontFlags)
+Gosu::Bitmap Gosu::createText(const char* text,
+	const char* fontName, unsigned fontHeight, unsigned fontFlags)
 {
-    FormattedString fs(text.c_str(), fontFlags);
+    FormattedString fs(text, fontFlags);
     if (fs.length() == 0)
         return Bitmap(1, fontHeight);
     
@@ -354,11 +354,11 @@ Gosu::Bitmap Gosu::createText(const wstring& text,
             }
                 
             assert(part.length() > 0);
-            wstring unformattedText = part.unformat();
+            string unformattedText = part.unformat();
             unsigned partWidth =
-                textWidth(unformattedText, fontName, fontHeight, part.flagsAt(0));
+                textWidth(unformattedText.c_str(), fontName, fontHeight, part.flagsAt(0));
             bmp.resize(max(bmp.width(), x + partWidth), bmp.height(), 0x00ffffff);
-            drawText(bmp, unformattedText, x, i * fontHeight, part.colorAt(0),
+            drawText(bmp, unformattedText.c_str(), x, i * fontHeight, part.colorAt(0),
                 fontName, fontHeight, part.flagsAt(0));
             x += partWidth;
         }
@@ -369,23 +369,23 @@ Gosu::Bitmap Gosu::createText(const wstring& text,
 
 namespace
 {
-    map<wstring, tr1::shared_ptr<Gosu::Bitmap> > entities;
+    map<string, tr1::shared_ptr<Gosu::Bitmap> > entities;
 }
 
-void Gosu::registerEntity(const wstring& name, const Gosu::Bitmap& replacement)
+void Gosu::registerEntity(const char* name, const Gosu::Bitmap& replacement)
 {
-    entities[name].reset(new Bitmap(replacement));
+    entities[std::string(name)].reset(new Bitmap(replacement));
 }
 
-bool Gosu::isEntity(const wstring& name)
+bool Gosu::isEntity(const char* name)
 {
-    return entities[name].get();
+    return entities[std::string(name)].get();
 }
 
-const Gosu::Bitmap& Gosu::entityBitmap(const wstring& name)
+const Gosu::Bitmap& Gosu::entityBitmap(const char* name)
 {
-    tr1::shared_ptr<Gosu::Bitmap>& ptr = entities[name];
+    tr1::shared_ptr<Gosu::Bitmap>& ptr = entities[std::string(name)];
     if (!ptr)
-        throw runtime_error("Unknown entity: " + Gosu::wstringToUTF8(name));
+        throw runtime_error("Unknown entity: " + std::string(name));
     return *ptr;
 }

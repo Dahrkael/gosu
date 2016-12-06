@@ -17,10 +17,10 @@ namespace Gosu
     {
         struct FormattedChar
         {
-            wchar_t wc;
+            char wc;
             Gosu::Color color;
             unsigned flags;
-            std::wstring entity;
+            std::string entity;
             
             bool sameStyleAs(const FormattedChar& other) const
             {
@@ -29,7 +29,7 @@ namespace Gosu
         };
         
         // If characters.empty(), use these for the whole string.
-        std::wstring simpleString;
+        std::string simpleString;
         unsigned simpleFlags;
         // If not characters.empty(), ignore above fields and use this.
         std::vector<FormattedChar> characters;
@@ -48,12 +48,12 @@ namespace Gosu
         {
         }
         
-        explicit FormattedString(const wchar_t* html, unsigned baseFlags)
+        explicit FormattedString(const char* html, unsigned baseFlags)
         {
             // Remove \r characters if existent. Avoid a copy if we don't need one.
-            std::wstring unixified;
-            if (std::wcschr(html, L'\r')) {
-                unixified.resize(std::wcslen(html));
+            std::string unixified;
+            if (std::strchr(html, '\r')) {
+                unixified.resize(std::strlen(html));
                 unsigned pos = 0;
                 while (*html)
                 {
@@ -65,10 +65,10 @@ namespace Gosu
                 html = unixified.c_str();
             }
             
-            std::size_t len = std::wcslen(html);
+            std::size_t len = std::strlen(html);
             
             // Just skip all this if there are entities or formatting tags in the string.
-            if (std::wcscspn(html, L"<&") == len)
+            if (std::strcspn(html, "<&") == len)
             {
                 simpleString = html;
                 simpleFlags = baseFlags;
@@ -83,92 +83,92 @@ namespace Gosu
             c.push_back(0xffffffff);
             while (pos < len)
             {
-                if (!std::wcsncmp(html + pos, L"<b>", 3))
+                if (!std::strncmp(html + pos, "<b>", 3))
                 {
                     b += 1;
                     pos += 3;
                     continue;
                 }
-                if (!std::wcsncmp(html + pos, L"</b>", 4))
+                if (!std::strncmp(html + pos, "</b>", 4))
                 {
                     b -= 1;
                     pos += 4;
                     continue;
                 }
-                if (!std::wcsncmp(html + pos, L"<u>", 3))
+                if (!std::strncmp(html + pos, "<u>", 3))
                 {
                     u += 1;
                     pos += 3;
                     continue;
                 }
-                if (!std::wcsncmp(html + pos, L"</u>", 4))
+                if (!std::strncmp(html + pos, "</u>", 4))
                 {
                     u -= 1;
                     pos += 4;
                     continue;
                 }
-                if (!std::wcsncmp(html + pos, L"<i>", 3))
+                if (!std::strncmp(html + pos, "<i>", 3))
                 {
                     i += 1;
                     pos += 3;
                     continue;
                 }
-                if (!std::wcsncmp(html + pos, L"</i>", 4))
+                if (!std::strncmp(html + pos, "</i>", 4))
                 {
                     i -= 1;
                     pos += 4;
                     continue;
                 }
-                if (!std::wcsncmp(html + pos, L"<c=", 3) &&
-                    len >= pos + 10 && html[pos + 9] == L'>')
+                if (!std::strncmp(html + pos, "<c=", 3) &&
+                    len >= pos + 10 && html[pos + 9] == '>')
                 {
                     using namespace std;
-                    unsigned rgb = static_cast<std::tr1::uint32_t>(wcstoul(html + pos + 3, 0, 16));
+                    unsigned rgb = static_cast<std::tr1::uint32_t>(strtoul(html + pos + 3, 0, 16));
                     c.push_back(0xff000000 | rgb);
                     pos += 10;
                     continue;
                 }
-                if (!std::wcsncmp(html + pos, L"<c=", 3) &&
-                    len >= pos + 12 && html[pos + 11] == L'>')
+                if (!std::strncmp(html + pos, "<c=", 3) &&
+                    len >= pos + 12 && html[pos + 11] == '>')
                 {
                     using namespace std;
-                    unsigned argb = static_cast<std::tr1::uint32_t>(wcstoul(html + pos + 3, 0, 16));
+                    unsigned argb = static_cast<std::tr1::uint32_t>(strtoul(html + pos + 3, 0, 16));
                     c.push_back(argb);
                     pos += 12;
                     continue;
                 }
-                if (!std::wcsncmp(html + pos, L"</c>", 4))
+                if (!std::strncmp(html + pos, "</c>", 4))
                 {
                     if (c.size() > 1)
                         c.pop_back();
                     pos += 4;
                     continue;
                 }
-                if (!std::wcsncmp(html + pos, L"&lt;", 4))
+                if (!std::strncmp(html + pos, "&lt;", 4))
                 {
-                    FormattedChar fc = { L'<', c.back(), flags(b,u,i) };
+                    FormattedChar fc = { '<', c.back(), flags(b,u,i) };
                     characters.push_back(fc);
                     pos += 4;
                     continue;
                 }
-                if (!std::wcsncmp(html + pos, L"&gt;", 4))
+                if (!std::strncmp(html + pos, "&gt;", 4))
                 {
-                    FormattedChar fc = { L'>', c.back(), flags(b,u,i) };
+                    FormattedChar fc = { '>', c.back(), flags(b,u,i) };
                     characters.push_back(fc);
                     pos += 4;
                     continue;
                 }
-                if (!std::wcsncmp(html + pos, L"&amp;", 5))
+                if (!std::strncmp(html + pos, "&amp;", 5))
                 {
-                    FormattedChar fc = { L'&', c.back(), flags(b,u,i) };
+                    FormattedChar fc = { '&', c.back(), flags(b,u,i) };
                     characters.push_back(fc);
                     pos += 5;
                     continue;
                 }
-                if (html[pos] == L'&' && html[pos + 1])
+                if (html[pos] == '&' && html[pos + 1])
                 {
                     int endOfEntity = pos + 1;
-                    while (html[endOfEntity] != L';')
+                    while (html[endOfEntity] != ';')
                     {
                         // Never know where the wchar_t stuff is...what a mess!
                         using namespace std;
@@ -179,8 +179,8 @@ namespace Gosu
                         if (endOfEntity >= len)
                             goto normalCharacter;
                     }
-                    FormattedChar fc = { 0, c.back(), 0, std::wstring(html + pos + 1, html + endOfEntity) };
-                    if (!isEntity(fc.entity))
+                    FormattedChar fc = { 0, c.back(), 0, std::string(html + pos + 1, html + endOfEntity) };
+                    if (!isEntity(fc.entity.c_str()))
                         goto normalCharacter;
                     characters.push_back(fc);
                     pos = endOfEntity + 1;
@@ -194,18 +194,18 @@ namespace Gosu
             }
         }
         
-        std::wstring unformat() const
+        std::string unformat() const
         {
             if (characters.empty())
                 return simpleString;
             
-            std::wstring result(characters.size(), 0);
+            std::string result(characters.size(), 0);
             for (int i = 0; i < characters.size(); ++i)
                 result[i] = characters[i].wc;
             return result;
         }
         
-        const wchar_t* entityAt(unsigned index) const
+        const char* entityAt(unsigned index) const
         {
             if (characters.empty())
                 return 0;
@@ -217,7 +217,7 @@ namespace Gosu
             return characters[index].entity.c_str();
         }
         
-        wchar_t charAt(unsigned index) const
+        char charAt(unsigned index) const
         {
             if (characters.empty())
                 return simpleString[index];

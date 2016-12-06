@@ -27,7 +27,7 @@ namespace Gosu
     // carries the width/height/fullscreen attributes, and global Gosu::drawFoo
     // functions. A Window then has a Viewport, and in theory, multiple windows
     // could have their own viewports etc.
-    class Graphics
+    class __declspec(dllexport) Graphics
     {
         struct Impl;
         

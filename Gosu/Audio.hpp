@@ -29,7 +29,7 @@ namespace Gosu
     //! It is recommended that you throw away sample instances if possible,
     //! as they could accidentally refer to other sounds being played after
     //! a very long time has passed.
-	class SampleInstance
+	class __declspec(dllexport) SampleInstance
 	{
 		int handle, extra;
         bool alive() const;		
@@ -62,7 +62,7 @@ namespace Gosu
     //! A sample is a short sound that is completely loaded in memory, can be
     //! played multiple times at once and offers very flexible playback
     //! parameters. Use samples for everything that's not music.
-    class Sample
+    class __declspec(dllexport) Sample
     {
         struct SampleData;
         std::tr1::shared_ptr<SampleData> data;
@@ -70,7 +70,7 @@ namespace Gosu
     public:
         //! Constructs a sample that can be played on the specified audio
         //! system and loads the sample from a file.
-        explicit Sample(const std::wstring& filename);
+        explicit Sample(const char* filename);
         
         //! Constructs a sample that can be played on the specified audio
         //! system and loads the sample data from a stream.
@@ -98,14 +98,14 @@ namespace Gosu
             bool looping = false) const;
 
         #ifndef SWIG
-        GOSU_DEPRECATED Sample(Audio& audio, const std::wstring& filename);
+        GOSU_DEPRECATED Sample(Audio& audio, const char* filename);
         GOSU_DEPRECATED Sample(Audio& audio, Reader reader);
         #endif
     };
 
     //! Songs are less flexible than samples in that they can only be played
     //! one at a time and without panning or speed parameters.
-    class Song
+    class __declspec(dllexport) Song
     {
         class BaseData;
         class ModuleData;
@@ -126,7 +126,7 @@ namespace Gosu
         //! Constructs a song that can be played on the provided audio system
         //! and loads the song from a file. The type is determined from the
         //! filename.
-        explicit Song(const std::wstring& filename);
+        explicit Song(const char* filename);
         
         //! Constructs a song of the specified type that can be played on the
         //! provided audio system and loads the song data from a stream.
@@ -163,7 +163,7 @@ namespace Gosu
 
         #ifndef SWIG
         enum Type { stStream, stModule };
-        GOSU_DEPRECATED Song(Audio&, const std::wstring& filename);
+        GOSU_DEPRECATED Song(Audio&, const char* filename);
         GOSU_DEPRECATED Song(Audio&, Type type, Reader reader);
         #endif
     };

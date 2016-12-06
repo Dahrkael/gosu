@@ -14,7 +14,7 @@
 namespace Gosu
 {
     //! Provides functionality for drawing rectangular images.
-    class Image
+    class __declspec(dllexport) Image
     {
         std::tr1::shared_ptr<ImageData> data;
 
@@ -23,14 +23,14 @@ namespace Gosu
         //!
         //! A color key of #ff00ff is automatically applied to BMP image files.
         //! For more flexibility, use the corresponding constructor that uses a Bitmap object.
-        explicit Image(const std::wstring& filename,
+        explicit Image(const char* filename,
             unsigned imageFlags = ifSmooth);
         
         //! Loads a portion of the the image at the given filename..
         //!
         //! A color key of #ff00ff is automatically applied to BMP image files.
         //! For more flexibility, use the corresponding constructor that uses a Bitmap object.
-        Image(const std::wstring& filename, unsigned srcX,
+        Image(const char* filename, unsigned srcX,
               unsigned srcY, unsigned srcWidth, unsigned srcHeight,
               unsigned imageFlags = ifSmooth);
         
@@ -80,9 +80,9 @@ namespace Gosu
         //! Provides access to the underlying image data object.
         ImageData& getData() const;
         
-        GOSU_DEPRECATED Image(Graphics& graphics, const std::wstring& filename,
+        GOSU_DEPRECATED Image(Graphics& graphics, const char* filename,
               bool tileable = false);
-        GOSU_DEPRECATED Image(Graphics& graphics, const std::wstring& filename, unsigned srcX,
+        GOSU_DEPRECATED Image(Graphics& graphics, const char* filename, unsigned srcX,
               unsigned srcY, unsigned srcWidth, unsigned srcHeight,
               bool tileable = false);
         GOSU_DEPRECATED Image(Graphics& graphics, const Bitmap& source,
@@ -98,20 +98,20 @@ namespace Gosu
     //! \param tileWidth If positive, specifies the width of one tile in pixels.
     //! If negative, the bitmap is divided into -tileWidth rows.
     //! \param tileHeight See tileWidth.
-    std::vector<Gosu::Image> loadTiles(const Bitmap& bmp,
+	__declspec(dllexport) std::vector<Gosu::Image> loadTiles(const Bitmap& bmp,
         int tileWidth, int tileHeight, unsigned imageFlags = ifSmooth);
     
     //! Convenience function that slices a bitmap into a grid and creates images from them.
     //! \param tileWidth If positive, specifies the width of one tile in pixels.
     //! If negative, the bitmap is divided into -tileWidth rows.
     //! \param tileHeight See tileWidth.
-    std::vector<Gosu::Image> loadTiles(const std::wstring& filename,
+	__declspec(dllexport) std::vector<Gosu::Image> loadTiles(const char* filename,
         int tileWidth, int tileHeight, unsigned imageFlags = ifSmooth);
     
     GOSU_DEPRECATED std::vector<Gosu::Image> loadTiles(Graphics& graphics, const Bitmap& bmp, int tileWidth, int tileHeight, bool tileable);
-    GOSU_DEPRECATED std::vector<Gosu::Image> loadTiles(Graphics& graphics, const std::wstring& bmp, int tileWidth, int tileHeight, bool tileable);
+    GOSU_DEPRECATED std::vector<Gosu::Image> loadTiles(Graphics& graphics, const char* bmp, int tileWidth, int tileHeight, bool tileable);
     template<typename Container>
-    GOSU_DEPRECATED void imagesFromTiledBitmap(Graphics& graphics, const std::wstring& filename, int tileWidth, int tileHeight, bool tileable, Container& appendTo)
+    GOSU_DEPRECATED void imagesFromTiledBitmap(Graphics& graphics, const char* filename, int tileWidth, int tileHeight, bool tileable, Container& appendTo)
     {
         std::vector<Gosu::Image> tiles = loadTiles(graphics, filename, tileWidth, tileHeight, tileable);
         for (int i = 0, num = tiles.size(); i < num; ++i)

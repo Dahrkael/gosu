@@ -20,7 +20,7 @@ namespace Gosu
     //! A TextInput object is purely abstract, though; drawing the input field is left
     //! to the user. As with most of Gosu, how this is handled is completely left open.
     //! TextInput only aims to provide enough code for your own GUIs to build upon.
-    class TextInput
+    class __declspec(dllexport) TextInput
     {
         struct Impl;
         const GOSU_UNIQUE_PTR<Impl> pimpl;
@@ -35,11 +35,11 @@ namespace Gosu
         TextInput();
         virtual ~TextInput();
 
-        std::wstring text() const;
+        const char* text() const;
 
         //! Replaces the current text by the given string and positions the cursor
         //! at the end of the text, with an empty selection.
-        void setText(const std::wstring& text);
+        void setText(const char* text);
 
         //! Position of the caret as the index of the character that it's left to.
         unsigned caretPos() const;
@@ -60,7 +60,7 @@ namespace Gosu
         //! Overridable filter that is applied to all new text that is entered.
         //! Allows for context-sensitive filtering/extending/... of the text.
         //! The text will be inserted at caretPos afterwards.
-        virtual std::wstring filter(const std::wstring& text) const
+        virtual const char* filter(const char* text) const
         {
             return text;
         }
